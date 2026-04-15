@@ -9,56 +9,78 @@ package com.mycompany.restauranteelbuensabor;
  * @author alfre
  */
 public class Proceso {
-public static double hacerTodo(){
-double sub=0;double iva=0;double tot=0;double aux=0;int cont=0;int i=0;
-while(i<Datos.nom.length){
-if(Datos.cant[i]>0){
-// multiplica precio por cantidad
-sub=sub+Datos.p[i]*Datos.cant[i];
-cont=cont+1;}
-i++;}// fin while
-if(cont>3){
-if(sub>0){
-aux=sub-(sub*0.05);
-if(aux>50000){
-iva=aux*0.19;
-// suma iva al subtotal con descuento
-tot=aux+iva;
-tot=tot+(tot*0.10);}
-else{
-// suma iva al subtotal
-iva=aux*0.19;
-tot=aux+iva;}}// fin if sub>0
-// version anterior - no borrar
-// sub = sub * 1.19;
-// if(sub > 40000) sub = sub + (sub*0.10);
-// return sub;
-}else{
-if(sub>50000){
-iva=sub*0.19;
-// suma iva al subtotal
-tot=sub+iva;
-tot=tot+(tot*0.10);}
-else{
-iva=sub*0.19;
-tot=sub+iva;}}// fin if-else cont
-Datos.est=1;Datos.tot=tot;
-return tot;}
-public static double procesar(double a,double b,double c,double d,double e,int f,boolean g){
-double res=0;double iva=0;double prop=0;double tmp=0;
-// calcula subtotal con cantidad
-res=a*b;
-if(c>0){
-// aplica descuento
-res=res-(res*c);}
-// calcula iva
-iva=res*d;tmp=iva;
-res=res+tmp;
-if(g){
-// aplica propina si corresponde
-prop=res*e;
-res=res+prop;}
-if(f>3){
-res=res-(res*0.01);}
-return res;}
+    public static double hacerTodo() {
+        double subtotal = 0;
+        double iva = 0;
+        double total = 0;
+        double subtotalConDescuento = 0;
+        int cantidadProductos = 0;
+        int indice = 0;
+        while (indice < DatosRestaurante.nombresProductos.length) {
+            if (DatosRestaurante.cantidadesPedido[indice] > 0) {
+                // multiplica precio por cantidad
+                subtotal = subtotal + DatosRestaurante.preciosProductos[indice] * DatosRestaurante.cantidadesPedido[indice];
+                cantidadProductos = cantidadProductos + 1;
+            }
+            indice++;
+        } // fin while
+        if (cantidadProductos > 3) {
+            if (subtotal > 0) {
+                subtotalConDescuento = subtotal - (subtotal * 0.05);
+                if (subtotalConDescuento > 50000) {
+                    iva = subtotalConDescuento * 0.19;
+                    // suma iva al subtotal con descuento
+                    total = subtotalConDescuento + iva;
+                    total = total + (total * 0.10);
+                } else {
+                    // suma iva al subtotal
+                    iva = subtotalConDescuento * 0.19;
+                    total = subtotalConDescuento + iva;
+                }
+            } // fin if subtotal>0
+            // version anterior - no borrar
+            // subtotal = subtotal * 1.19;
+            // if(subtotal > 40000) subtotal = subtotal + (subtotal*0.10);
+            // return subtotal;
+        } else {
+            if (subtotal > 50000) {
+                iva = subtotal * 0.19;
+                // suma iva al subtotal
+                total = subtotal + iva;
+                total = total + (total * 0.10);
+            } else {
+                iva = subtotal * 0.19;
+                total = subtotal + iva;
+            }
+        } // fin if-else cantidadProductos
+        DatosRestaurante.estadoMesa = "ocupada";
+        DatosRestaurante.totalFactura = total;
+        return total;
+    }
+
+    public static double procesar(double precioUnitario, double cantidad, double porcentajeDescuento, double porcentajeIva, double porcentajePropina, int cantidadProductos, boolean aplicarPropina) {
+        double resultado = 0;
+        double iva = 0;
+        double propina = 0;
+        double temporal = 0;
+        // calcula subtotal con cantidad
+        resultado = precioUnitario * cantidad;
+        if (porcentajeDescuento > 0) {
+            // aplica descuento
+            resultado = resultado - (resultado * porcentajeDescuento);
+        }
+        // calcula iva
+        iva = resultado * porcentajeIva;
+        temporal = iva;
+        resultado = resultado + temporal;
+        if (aplicarPropina) {
+            // aplica propina si corresponde
+            propina = resultado * porcentajePropina;
+            resultado = resultado + propina;
+        }
+        if (cantidadProductos > 3) {
+            resultado = resultado - (resultado * 0.01);
+        }
+        return resultado;
+    }
 }
